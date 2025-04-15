@@ -89,6 +89,69 @@ Future<void> obtenerDatos() async {
 
  Unit tests con flutter_test
 
+# 🔐 Conexión SSH a GitHub en Firebase Studio
+
+Cuando trabajas en entornos efímeros como **Firebase Studio**, al cerrar la sesión o reiniciar, tu conexión SSH con GitHub se pierde. Aquí te explico cómo reconectar rápido para poder seguir trabajando y haciendo `git push`.
+
+---
+
+## ⚙️ Pasos para reconectar con GitHub por SSH
+
+### 1. Entra a tu proyecto y activa el entorno
+```bash
+cd ~/myapp
+nix-shell dev.nix
+```
+Esto te da acceso temporal a herramientas como ssh-agent, ssh-add, etc., gracias al archivo dev.nix.
+
+2. Levanta el agente SSH
+```bash
+eval "$(ssh-agent -s)"
+```
+3. Agrega tu clave privada (si ya la habías generado, no repitas esto)
+```bash
+ssh-add ~/.ssh/id_ed25519
+```
+4. Verifica que fue agregada correctamente
+```bash
+ssh-add -l
+```
+Deberías ver tu clave listada. Si no aparece, asegúrate de haberla generado y que esté en la ruta correcta.
+
+5. Ahora sí, haz push al repositorio
+```bash
+git push origin master
+```
+🧠 Tip Pro: Automatiza todo con un script
+Crea un archivo llamado start-dev.sh en tu proyecto con el siguiente contenido:
+
+```bash
+#!/bin/bash
+
+cd ~/myapp
+```
+
+```shell
+nix-shell dev.nix --run "
+  eval \$(ssh-agent -s)
+  ssh-add ~/.ssh/id_ed25519
+  bash
+"
+```
+Hazlo ejecutable con:
+
+```bash
+chmod +x start-dev.sh
+```
+Y cuando vuelvas a Firebase Studio, solo ejecuta:
+
+```bash
+bash start-dev.sh
+```
+✅ Importante: Como Firebase Studio no guarda tu sesión, deberás repetir estos pasos (o usar el script) cada vez que vuelvas a ingresar.
+
+
+
 🧠 Autor
 Emerson Espinoza
 
